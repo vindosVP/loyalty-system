@@ -60,7 +60,7 @@ func Login(s Storage, jwtSecret string) http.HandlerFunc {
 			return
 		}
 
-		token, err := tokens.CreateJwt(
+		token, err := tokens.CreateJWT(
 			tokens.JWTClaims(gotUser.ID, gotUser.Login, time.Now().Add(time.Hour*72).Unix()),
 			jwtSecret,
 		)
@@ -120,7 +120,7 @@ func Register(s Storage, jwtSecret string) http.HandlerFunc {
 			return
 		}
 
-		token, err := tokens.CreateJwt(
+		token, err := tokens.CreateJWT(
 			tokens.JWTClaims(createdUser.ID, createdUser.Login, time.Now().Add(time.Hour*72).Unix()),
 			jwtSecret,
 		)

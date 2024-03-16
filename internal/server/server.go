@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chim "github.com/go-chi/chi/v5/middleware"
 	"github.com/vindosVP/loyalty-system/cmd/gophermart/config"
 	"github.com/vindosVP/loyalty-system/internal/database"
 	"github.com/vindosVP/loyalty-system/internal/handlers"
@@ -27,7 +27,7 @@ func Run(cfg *config.Config) error {
 	s := storage.New(ur)
 
 	r := chi.NewRouter()
-	r.Use(middleware.Logger, middleware.Compress(5))
+	r.Use(chim.Logger, chim.Compress(5))
 	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 	})
