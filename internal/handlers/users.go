@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,11 +14,6 @@ import (
 	"net/http"
 	"time"
 )
-
-type Storage interface {
-	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
-	GetUserByLogin(ctx context.Context, login string) (*models.User, error)
-}
 
 func Login(s Storage, jwtSecret string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

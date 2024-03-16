@@ -19,11 +19,11 @@ func (ur *UserRepo) Create(ctx context.Context, user *models.User) (*models.User
 	query := "insert into users (login, encryptedPassword) values ($1, $2)"
 	_, err := ur.pool.Exec(ctx, query, user.Login, user.EncryptedPwd)
 	if err != nil {
-		return nil, fmt.Errorf("s.pool.Exec: %w", err)
+		return nil, fmt.Errorf("ur.pool.Exec: %w", err)
 	}
 	resUser, err := ur.GetByLogin(ctx, user.Login)
 	if err != nil {
-		return nil, fmt.Errorf("s.GetUserByLogin: %w", err)
+		return nil, fmt.Errorf("ur.GetUserByLogin: %w", err)
 	}
 	return resUser, nil
 }
