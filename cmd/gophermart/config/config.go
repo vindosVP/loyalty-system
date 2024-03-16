@@ -10,7 +10,7 @@ type Config struct {
 	RunAddr        string `env:"RUN_ADDRESS"`
 	LogLevel       string `env:"LOG_LEVEL"`
 	AccrualSysAddr string `env:"ACCRUAL_SYSTEM_ADDRESS"`
-	DbURI          string `env:"DATABASE_URI"`
+	DBURI          string `env:"DATABASE_URI"`
 	JWTSecret      string `env:"JWT_SECRET"`
 }
 
@@ -20,7 +20,7 @@ func New() *Config {
 	flag.StringVar(&flagCfg.RunAddr, "a", ":8080", "run address")
 	flag.StringVar(&flagCfg.LogLevel, "l", "debug", "log level")
 	flag.StringVar(&flagCfg.AccrualSysAddr, "r", ":8081", "accrual system address")
-	flag.StringVar(&flagCfg.DbURI, "d", "postgres://postgres:postgres@localhost:5432/loyalty-system?sslmode=disable", "database uri")
+	flag.StringVar(&flagCfg.DBURI, "d", "postgres://postgres:postgres@localhost:5432/loyalty-system?sslmode=disable", "database uri")
 	flag.StringVar(&flagCfg.JWTSecret, "s", "super-secret", "jwt secret")
 	flag.Parse()
 
@@ -32,7 +32,7 @@ func New() *Config {
 	cfg := &Config{}
 	cfg.RunAddr = envCfg.RunAddr
 	cfg.LogLevel = envCfg.LogLevel
-	cfg.DbURI = envCfg.DbURI
+	cfg.DBURI = envCfg.DBURI
 	cfg.AccrualSysAddr = envCfg.AccrualSysAddr
 	cfg.JWTSecret = envCfg.JWTSecret
 	if cfg.RunAddr == "" {
@@ -41,8 +41,8 @@ func New() *Config {
 	if cfg.LogLevel == "" {
 		cfg.LogLevel = flagCfg.LogLevel
 	}
-	if cfg.DbURI == "" {
-		cfg.DbURI = flagCfg.DbURI
+	if cfg.DBURI == "" {
+		cfg.DBURI = flagCfg.DBURI
 	}
 	if cfg.AccrualSysAddr == "" {
 		cfg.AccrualSysAddr = flagCfg.AccrualSysAddr

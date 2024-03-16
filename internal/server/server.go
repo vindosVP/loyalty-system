@@ -17,7 +17,7 @@ import (
 
 func Run(cfg *config.Config) error {
 	ctx := context.Background()
-	pool, err := database.New(ctx, cfg.DbURI)
+	pool, err := database.New(ctx, cfg.DBURI)
 	if err != nil {
 		return fmt.Errorf("database.New: %w", err)
 	}
@@ -31,7 +31,7 @@ func Run(cfg *config.Config) error {
 	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 	})
-	r.Post("/api/user/register", handlers.Create(s))
+	r.Post("/api/user/register", handlers.Register(s, cfg.JWTSecret))
 	r.Post("/api/user/login", handlers.Login(s, cfg.JWTSecret))
 
 	logger.Log.Info("Server started", zap.String("Address", cfg.RunAddr))

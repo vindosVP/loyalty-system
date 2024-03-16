@@ -18,7 +18,7 @@ func main() {
 	logger.Log.Info("Configuration loaded",
 		zap.String("Run address", cfg.RunAddr),
 		zap.String("Log level", cfg.LogLevel),
-		zap.String("Database URI", cfg.DbURI),
+		zap.String("Database URI", cfg.DBURI),
 		zap.String("Accrual system address", cfg.AccrualSysAddr),
 	)
 	err = server.Run(cfg)

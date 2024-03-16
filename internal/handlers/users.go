@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/vindosVP/loyalty-system/internal/models"
 	"github.com/vindosVP/loyalty-system/internal/storage"
 	"github.com/vindosVP/loyalty-system/pkg/logger"
@@ -18,10 +19,6 @@ import (
 type Storage interface {
 	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
 	GetUserByLogin(ctx context.Context, login string) (*models.User, error)
-}
-
-type LoginResponse struct {
-	AuthToken string `json:"authToken"`
 }
 
 func Login(s Storage, jwtSecret string) http.HandlerFunc {
@@ -64,7 +61,7 @@ func Login(s Storage, jwtSecret string) http.HandlerFunc {
 		}
 
 		token, err := tokens.CreateJwt(
-			tokens.JWTClaims(gotUser.Id, gotUser.Login, time.Now().Add(time.Hour*72).Unix()),
+			tokens.JWTClaims(gotUser.ID, gotUser.Login, time.Now().Add(time.Hour*72).Unix()),
 			jwtSecret,
 		)
 		if err != nil {
@@ -73,29 +70,13 @@ func Login(s Storage, jwtSecret string) http.HandlerFunc {
 			return
 		}
 
-		resp := &LoginResponse{
-			AuthToken: token,
-		}
-
-		data, err := json.Marshal(resp)
-		if err != nil {
-			logger.Log.Error("Error marshalling response", zap.Error(err))
-			http.Error(w, "Error marshalling response", http.StatusInternalServerError)
-			return
-		}
-
 		w.Header().Set("Content-Type", "application/json")
-		_, err = w.Write(data)
-		if err != nil {
-			logger.Log.Error("Error writing response", zap.Error(err))
-			http.Error(w, "Error writing response", http.StatusInternalServerError)
-			return
-		}
+		w.Header().Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		w.WriteHeader(http.StatusOK)
 	}
 }
 
-func Create(s Storage) http.HandlerFunc {
+func Register(s Storage, jwtSecret string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var buf bytes.Buffer
@@ -139,6 +120,16 @@ func Create(s Storage) http.HandlerFunc {
 			return
 		}
 
+		token, err := tokens.CreateJwt(
+			tokens.JWTClaims(createdUser.ID, createdUser.Login, time.Now().Add(time.Hour*72).Unix()),
+			jwtSecret,
+		)
+		if err != nil {
+			logger.Log.Error("Error creating token", zap.Error(err))
+			http.Error(w, "Error creating token", http.StatusInternalServerError)
+			return
+		}
+
 		data, err := json.Marshal(createdUser)
 		if err != nil {
 			logger.Log.Error("Error marshalling user", zap.Error(err))
@@ -147,6 +138,7 @@ func Create(s Storage) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		_, err = w.Write(data)
 		if err != nil {
 			logger.Log.Error("Error writing response", zap.Error(err))

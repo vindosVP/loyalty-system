@@ -32,18 +32,18 @@ func (ur *UserRepo) GetByLogin(ctx context.Context, login string) (*models.User,
 	query := "select id, login, encryptedPassword from users where login = $1"
 	row := ur.pool.QueryRow(ctx, query, login)
 	user := &models.User{}
-	err := row.Scan(&user.Id, &user.Login, &user.EncryptedPwd)
+	err := row.Scan(&user.ID, &user.Login, &user.EncryptedPwd)
 	if err != nil {
 		return nil, fmt.Errorf("row.Scan: %w", err)
 	}
 	return user, nil
 }
 
-func (ur *UserRepo) GetById(ctx context.Context, id int) (*models.User, error) {
+func (ur *UserRepo) GetByID(ctx context.Context, id int) (*models.User, error) {
 	query := "select id, login, encryptedPassword from users where id = $1"
 	row := ur.pool.QueryRow(ctx, query, id)
 	user := &models.User{}
-	err := row.Scan(&user.Id, &user.Login, &user.EncryptedPwd)
+	err := row.Scan(&user.ID, &user.Login, &user.EncryptedPwd)
 	if err != nil {
 		return nil, fmt.Errorf("row.Scan: %w", err)
 	}
