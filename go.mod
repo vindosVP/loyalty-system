@@ -1,6 +1,6 @@
 module github.com/vindosVP/loyalty-system
 
-go 1.22.0
+go 1.21.8
 
 require (
 	github.com/caarlos0/env/v10 v10.0.0
