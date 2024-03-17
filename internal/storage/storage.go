@@ -92,3 +92,11 @@ func (s *Storage) GetUsersWithdrawnBalance(ctx context.Context, userID int) (flo
 	}
 	return balance, nil
 }
+
+func (s *Storage) GetUsersWithdrawals(ctx context.Context, userID int) ([]*models.Order, error) {
+	withdrawals, err := s.orderRepo.GetUsersWithdrawals(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("s.orderRepo.GetUsersWithdrawals: %w", err)
+	}
+	return withdrawals, nil
+}

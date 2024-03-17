@@ -41,6 +41,8 @@ func Run(cfg *config.Config) error {
 		r.Post("/api/user/orders", handlers.CreateOrder(s))
 		r.Get("/api/user/orders", handlers.GetOrderList(s))
 		r.Get("/api/user/balance", handlers.GetUsersBalance(s))
+		r.Post("/api/user/balance/withdraw", handlers.WithdrawOrder(s))
+		r.Get("/api/user/withdrawals", handlers.GetUsersWithdrawals(s))
 	})
 
 	logger.Log.Info("Server started", zap.String("Address", cfg.RunAddr))

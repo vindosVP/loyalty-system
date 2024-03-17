@@ -24,8 +24,18 @@ func New(ctx context.Context, dbURI string) (*pgxpool.Pool, error) {
 }
 
 func createTables(ctx context.Context, pool *pgxpool.Pool) error {
-	query := `CREATE TABLE IF NOT EXISTS users (id SERIAL NOT NULL PRIMARY KEY, login TEXT NOT NULL, encryptedPassword TEXT NOT NULL);
-              CREATE TABLE IF NOT EXISTS orders (id BIGINT NOT NULL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, status TEXT NOT NULL, sum FLOAT NOT NULL, uploaded_at TIMESTAMP NOT NULL);`
+	query := `CREATE TABLE IF NOT EXISTS users (
+    			  id SERIAL NOT NULL PRIMARY KEY, 
+    			  login TEXT NOT NULL, 
+    			  encryptedPassword TEXT NOT NULL
+              );
+              CREATE TABLE IF NOT EXISTS orders (
+                  id BIGINT NOT NULL PRIMARY KEY, 
+                  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, 
+                  status TEXT NOT NULL, 
+                  sum FLOAT NOT NULL, 
+                  uploaded_at TIMESTAMP NOT NULL
+    		  );`
 	_, err := pool.Exec(ctx, query)
 	if err != nil {
 		return err

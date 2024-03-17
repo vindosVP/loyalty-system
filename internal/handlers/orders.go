@@ -79,7 +79,7 @@ func CreateOrder(s Storage) http.HandlerFunc {
 				return
 			}
 			if errors.Is(err, storage.ErrOrderCreatedByOtherUser) {
-				http.Error(w, err.Error(), http.StatusConflict)
+				http.Error(w, "Order was already created by other user", http.StatusConflict)
 				return
 			}
 			logger.Log.Error("Error creating order", zap.Error(err))

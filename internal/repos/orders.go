@@ -96,3 +96,21 @@ func (or *OrdersRepo) GetUsersWithdrawnBalance(ctx context.Context, userID int) 
 	}
 	return 0, nil
 }
+
+func (or *OrdersRepo) GetUsersWithdrawals(ctx context.Context, userID int) ([]*models.Order, error) {
+	query := "select id, user_id, status, -sum, uploaded_at from orders where user_id = $1 and sum < 0 order by uploaded_at"
+	orders := make([]*models.Order, 0)
+	rows, err := or.pool.Query(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("or.pool.Query: %w", err)
+	}
+	for rows.Next() {
+		order := &models.Order{}
+		err := rows.Scan(&order.ID, &order.UserID, &order.Status, &order.Sum, &order.UploadedAt)
+		if err != nil {
+			return nil, fmt.Errorf("rows.Scan: %w", err)
+		}
+		orders = append(orders, order)
+	}
+	return orders, nil
+}
