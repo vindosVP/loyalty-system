@@ -8,6 +8,7 @@ import (
 	"github.com/vindosVP/loyalty-system/cmd/gophermart/config"
 	"github.com/vindosVP/loyalty-system/internal/database"
 	"github.com/vindosVP/loyalty-system/internal/handlers"
+	"github.com/vindosVP/loyalty-system/internal/middleware"
 	"github.com/vindosVP/loyalty-system/internal/repos"
 	"github.com/vindosVP/loyalty-system/internal/storage"
 	"github.com/vindosVP/loyalty-system/pkg/logger"
@@ -24,7 +25,8 @@ func Run(cfg *config.Config) error {
 	defer pool.Close()
 
 	ur := repos.NewUserRepo(pool)
-	s := storage.New(ur)
+	or := repos.NewOrdersRepo(pool)
+	s := storage.New(ur, or)
 
 	r := chi.NewRouter()
 	r.Use(chim.Logger, chim.Compress(5))
@@ -33,6 +35,15 @@ func Run(cfg *config.Config) error {
 	})
 	r.Post("/api/user/register", handlers.Register(s, cfg.JWTSecret))
 	r.Post("/api/user/login", handlers.Login(s, cfg.JWTSecret))
+	r.Group(func(r chi.Router) {
+		a := middleware.NewAuthenticator(cfg.JWTSecret)
+		r.Use(a.WithAuth)
+		r.Post("/api/user/orders", handlers.CreateOrder(s))
+		r.Get("/api/user/orders", handlers.GetOrderList(s))
+		r.Get("/api/user/balance", handlers.GetUsersBalance(s))
+		r.Post("/api/user/balance/withdraw", handlers.WithdrawOrder(s))
+		r.Get("/api/user/withdrawals", handlers.GetUsersWithdrawals(s))
+	})
 
 	logger.Log.Info("Server started", zap.String("Address", cfg.RunAddr))
 	err = http.ListenAndServe(cfg.RunAddr, r)

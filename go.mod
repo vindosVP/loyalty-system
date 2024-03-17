@@ -3,6 +3,7 @@ module github.com/vindosVP/loyalty-system
 go 1.21.8
 
 require (
+	github.com/ShiraazMoollatjie/goluhn v0.0.0-20211017190329-0d86158c056a
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-playground/validator/v10 v10.19.0
