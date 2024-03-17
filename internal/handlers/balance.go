@@ -47,6 +47,11 @@ func GetUsersBalance(s Storage) http.HandlerFunc {
 		}
 
 		data, err := json.Marshal(&resp)
+		if err != nil {
+			logger.Log.Error("Error marshaling response", zap.Error(err))
+			http.Error(w, "Error marshaling response", http.StatusInternalServerError)
+			return
+		}
 
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write(data)

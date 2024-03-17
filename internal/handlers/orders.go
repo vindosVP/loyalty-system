@@ -34,7 +34,7 @@ func CreateOrder(s Storage) http.HandlerFunc {
 			return
 		}
 
-		gotOrderID := string(buf.Bytes())
+		gotOrderID := buf.String()
 		if len(gotOrderID) == 0 {
 			http.Error(w, "Empty order id", http.StatusBadRequest)
 			return
