@@ -157,6 +157,7 @@ func TestCreateOrder(t *testing.T) {
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.statusCode, res.StatusCode)
 		})
@@ -292,6 +293,7 @@ func TestGetOrderList(t *testing.T) {
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.statusCode, res.StatusCode)
 			if tt.want.statusCode == http.StatusOK {

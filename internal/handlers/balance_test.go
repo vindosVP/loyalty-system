@@ -136,6 +136,7 @@ func TestGetUsersBalance(t *testing.T) {
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.statusCode, res.StatusCode)
 			if tt.want.statusCode == http.StatusOK {
@@ -349,6 +350,8 @@ func TestWithdrawOrder(t *testing.T) {
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
 			res := w.Result()
+			defer res.Body.Close()
+
 			assert.Equal(t, tt.want.statusCode, res.StatusCode)
 		})
 	}
@@ -479,6 +482,7 @@ func TestGetUsersWithdrawals(t *testing.T) {
 			w := httptest.NewRecorder()
 			r.ServeHTTP(w, req)
 			res := w.Result()
+			defer res.Body.Close()
 
 			assert.Equal(t, tt.want.statusCode, res.StatusCode)
 			if tt.want.statusCode == http.StatusOK {
