@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	errNoAuthHeader      = fmt.Errorf("no auth header")
-	errInvalidAuthFormat = fmt.Errorf("invalid auth format")
+	ErrNoAuthHeader      = fmt.Errorf("no auth header")
+	ErrInvalidAuthFormat = fmt.Errorf("invalid auth format")
 )
 
 const bearerSchema = "Bearer "
@@ -16,11 +16,11 @@ const bearerSchema = "Bearer "
 func ParseBearerToken(r *http.Request) (string, error) {
 	reqToken := r.Header.Get("Authorization")
 	if reqToken == "" {
-		return "", errNoAuthHeader
+		return "", ErrNoAuthHeader
 	}
 	splitToken := strings.Split(reqToken, bearerSchema)
 	if len(splitToken) != 2 {
-		return "", errInvalidAuthFormat
+		return "", ErrInvalidAuthFormat
 	}
 	return splitToken[1], nil
 }

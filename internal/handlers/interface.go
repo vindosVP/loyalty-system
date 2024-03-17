@@ -5,6 +5,7 @@ import (
 	"github.com/vindosVP/loyalty-system/internal/models"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=Storage
 type Storage interface {
 	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
 	GetUserByLogin(ctx context.Context, login string) (*models.User, error)

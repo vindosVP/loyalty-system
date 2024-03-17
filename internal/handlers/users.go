@@ -64,7 +64,6 @@ func Login(s Storage, jwtSecret string) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		w.WriteHeader(http.StatusOK)
 	}
@@ -91,6 +90,17 @@ func Register(s Storage, jwtSecret string) http.HandlerFunc {
 
 		if err = user.Validate(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		foundUser, err := s.GetUserByLogin(r.Context(), user.Login)
+		if err != nil && !errors.Is(err, storage.ErrUserNotFound) {
+			logger.Log.Error("Error getting user", zap.Error(err))
+			http.Error(w, "Error getting user", http.StatusInternalServerError)
+			return
+		}
+		if foundUser != nil {
+			http.Error(w, "User already exists", http.StatusConflict)
 			return
 		}
 

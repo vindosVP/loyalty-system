@@ -4,15 +4,33 @@ import (
 	"context"
 	"fmt"
 	"github.com/vindosVP/loyalty-system/internal/models"
-	"github.com/vindosVP/loyalty-system/internal/repos"
 )
 
-type Storage struct {
-	userRepo  *repos.UserRepo
-	orderRepo *repos.OrdersRepo
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=UserRepo
+type UserRepo interface {
+	Create(ctx context.Context, user *models.User) (*models.User, error)
+	GetByLogin(ctx context.Context, login string) (*models.User, error)
+	GetByID(ctx context.Context, id int) (*models.User, error)
+	Exists(ctx context.Context, login string) (bool, error)
 }
 
-func New(ur *repos.UserRepo, or *repos.OrdersRepo) *Storage {
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=OrderRepo
+type OrderRepo interface {
+	Create(ctx context.Context, order *models.Order) (*models.Order, error)
+	GetByID(ctx context.Context, id int) (*models.Order, error)
+	Exists(ctx context.Context, id int) (bool, error)
+	GetUsersOrders(ctx context.Context, userID int) ([]*models.Order, error)
+	GetUsersCurrentBalance(ctx context.Context, userID int) (float64, error)
+	GetUsersWithdrawnBalance(ctx context.Context, userID int) (float64, error)
+	GetUsersWithdrawals(ctx context.Context, userID int) ([]*models.Order, error)
+}
+
+type Storage struct {
+	userRepo  UserRepo
+	orderRepo OrderRepo
+}
+
+func New(ur UserRepo, or OrderRepo) *Storage {
 	return &Storage{userRepo: ur, orderRepo: or}
 }
 
