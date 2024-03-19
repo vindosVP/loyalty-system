@@ -113,6 +113,11 @@ func WithdrawOrder(s Storage) http.HandlerFunc {
 			return
 		}
 
+		if req.Sum <= 0 {
+			http.Error(w, "Invalid sum", http.StatusBadRequest)
+			return
+		}
+
 		currentBalance, err := s.GetUsersCurrentBalance(r.Context(), userID)
 		if err != nil {
 			logger.Log.Error("Error getting users current balance", zap.Error(err))
@@ -135,7 +140,7 @@ func WithdrawOrder(s Storage) http.HandlerFunc {
 		order := &models.Order{
 			ID:         orderID,
 			UserID:     userID,
-			Status:     models.OrderStatusNew,
+			Status:     models.OrderStatusProcessed,
 			Sum:        -req.Sum,
 			UploadedAt: time.Now(),
 		}
