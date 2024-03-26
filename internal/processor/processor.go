@@ -133,7 +133,7 @@ func (p *Processor) generateJobs(orders []int) chan job {
 
 func processOrder(client *resty.Client, serverAddress string, order int, storage Storage) error {
 	var response accrualResponse
-	url := fmt.Sprintf("http://%s/api/orders/%s", serverAddress, strconv.Itoa(order))
+	url := fmt.Sprintf("%s/api/orders/%s", serverAddress, strconv.Itoa(order))
 	resp, err := client.R().SetResult(&response).Get(url)
 	if err != nil {
 		logger.Log.Error("Failed to get accruals by order", zap.Int("orderId", order), zap.Error(err))
