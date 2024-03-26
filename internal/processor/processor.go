@@ -2,6 +2,7 @@ package processor
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-resty/resty/v2"
@@ -18,6 +19,7 @@ var ErrTooManyRequests = errors.New("too many requests")
 type Storage interface {
 	GetUnprocessedOrders(ctx context.Context) ([]int, error)
 	UpdateOrder(ctx context.Context, id int, status string, sum float64) (*models.Order, error)
+	UpdateOrderStatus(ctx context.Context, id int, status string) (*models.Order, error)
 }
 
 type Processor struct {
@@ -134,7 +136,7 @@ func (p *Processor) generateJobs(orders []int) chan job {
 func processOrder(client *resty.Client, serverAddress string, order int, storage Storage) error {
 	var response accrualResponse
 	url := fmt.Sprintf("%s/api/orders/%s", serverAddress, strconv.Itoa(order))
-	resp, err := client.R().SetResult(&response).Get(url)
+	resp, err := client.R().Get(url)
 	if err != nil {
 		logger.Log.Error("Failed to get accruals by order", zap.Int("orderId", order), zap.Error(err))
 	}
@@ -145,8 +147,18 @@ func processOrder(client *resty.Client, serverAddress string, order int, storage
 		logger.Log.Error("Failed to get accruals by order", zap.Int("orderId", order), zap.Int("statusCode", resp.StatusCode()))
 		return err
 	}
+	err = json.Unmarshal(resp.Body(), &response)
+	if err != nil {
+		logger.Log.Error("Failed to unmarshal accruals response", zap.Int("orderId", order), zap.Error(err))
+		return err
+	}
 	id, _ := strconv.Atoi(response.Order)
-	_, err = storage.UpdateOrder(context.Background(), id, response.Status, response.Accrual)
+	if response.Status == models.OrderStatusProcessed {
+		_, err = storage.UpdateOrder(context.Background(), id, response.Status, response.Accrual)
+	} else {
+		_, err = storage.UpdateOrderStatus(context.Background(), id, response.Status)
+	}
+
 	if err != nil {
 		return fmt.Errorf("storage.UpdateOrder: %w", err)
 	}

@@ -116,8 +116,8 @@ func (or *OrdersRepo) GetUsersWithdrawals(ctx context.Context, userID int) ([]*m
 }
 
 func (or *OrdersRepo) GetUnprocessedOrders(ctx context.Context) ([]int, error) {
-	query := "select id from orders where status = $1"
-	rows, err := or.pool.Query(ctx, query, models.OrderStatusNew)
+	query := "select id from orders where status = $1 or status = $2"
+	rows, err := or.pool.Query(ctx, query, models.OrderStatusNew, models.OrderStatusProcessing)
 	if err != nil {
 		return nil, fmt.Errorf("or.pool.Query: %w", err)
 	}
@@ -136,6 +136,15 @@ func (or *OrdersRepo) GetUnprocessedOrders(ctx context.Context) ([]int, error) {
 func (or *OrdersRepo) UpdateOrder(ctx context.Context, id int, status string, sum float64) (*models.Order, error) {
 	query := "update orders set status = $1, sum = $2 where id = $3"
 	_, err := or.pool.Exec(ctx, query, status, sum, id)
+	if err != nil {
+		return nil, fmt.Errorf("or.pool.Exec: %w", err)
+	}
+	return or.GetByID(ctx, id)
+}
+
+func (or *OrdersRepo) UpdateOrderStatus(ctx context.Context, id int, status string) (*models.Order, error) {
+	query := "update orders set status = $1 where id = $3"
+	_, err := or.pool.Exec(ctx, query, status, id)
 	if err != nil {
 		return nil, fmt.Errorf("or.pool.Exec: %w", err)
 	}

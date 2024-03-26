@@ -25,6 +25,7 @@ type OrderRepo interface {
 	GetUsersWithdrawals(ctx context.Context, userID int) ([]*models.Order, error)
 	GetUnprocessedOrders(ctx context.Context) ([]int, error)
 	UpdateOrder(ctx context.Context, id int, status string, sum float64) (*models.Order, error)
+	UpdateOrderStatus(ctx context.Context, id int, status string) (*models.Order, error)
 }
 
 type Storage struct {
@@ -133,6 +134,14 @@ func (s *Storage) UpdateOrder(ctx context.Context, id int, status string, sum fl
 	order, err := s.orderRepo.UpdateOrder(ctx, id, status, sum)
 	if err != nil {
 		return nil, fmt.Errorf("s.orderRepo.Update: %w", err)
+	}
+	return order, nil
+}
+
+func (s *Storage) UpdateOrderStatus(ctx context.Context, id int, status string) (*models.Order, error) {
+	order, err := s.orderRepo.UpdateOrderStatus(ctx, id, status)
+	if err != nil {
+		return nil, fmt.Errorf("s.orderRepo.UpdateOrderStatus: %w", err)
 	}
 	return order, nil
 }
