@@ -114,3 +114,30 @@ func (or *OrdersRepo) GetUsersWithdrawals(ctx context.Context, userID int) ([]*m
 	}
 	return orders, nil
 }
+
+func (or *OrdersRepo) GetUnprocessedOrders(ctx context.Context) ([]int, error) {
+	query := "select id from orders where status = $1"
+	rows, err := or.pool.Query(ctx, query, models.OrderStatusNew)
+	if err != nil {
+		return nil, fmt.Errorf("or.pool.Query: %w", err)
+	}
+	var ids []int
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		if err != nil {
+			return nil, fmt.Errorf("rows.Scan: %w", err)
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
+func (or *OrdersRepo) UpdateOrder(ctx context.Context, id int, status string, sum float64) (*models.Order, error) {
+	query := "update orders set status = $1, sum = $2 where id = $3"
+	_, err := or.pool.Exec(ctx, query, status, sum, id)
+	if err != nil {
+		return nil, fmt.Errorf("or.pool.Exec: %w", err)
+	}
+	return or.GetByID(ctx, id)
+}
