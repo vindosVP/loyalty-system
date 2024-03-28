@@ -90,6 +90,32 @@ func (_m *OrderRepo) GetByID(ctx context.Context, id int) (*models.Order, error)
 	return r0, r1
 }
 
+// GetUnprocessedOrders provides a mock function with given fields: ctx
+func (_m *OrderRepo) GetUnprocessedOrders(ctx context.Context) ([]int, error) {
+	ret := _m.Called(ctx)
+
+	var r0 []int
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) ([]int, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) []int); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]int)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetUsersCurrentBalance provides a mock function with given fields: ctx, userID
 func (_m *OrderRepo) GetUsersCurrentBalance(ctx context.Context, userID int) (float64, error) {
 	ret := _m.Called(ctx, userID)
@@ -183,6 +209,58 @@ func (_m *OrderRepo) GetUsersWithdrawnBalance(ctx context.Context, userID int) (
 
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
 		r1 = rf(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateOrder provides a mock function with given fields: ctx, id, status, sum
+func (_m *OrderRepo) UpdateOrder(ctx context.Context, id int, status string, sum float64) (*models.Order, error) {
+	ret := _m.Called(ctx, id, status, sum)
+
+	var r0 *models.Order
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, string, float64) (*models.Order, error)); ok {
+		return rf(ctx, id, status, sum)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int, string, float64) *models.Order); ok {
+		r0 = rf(ctx, id, status, sum)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Order)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int, string, float64) error); ok {
+		r1 = rf(ctx, id, status, sum)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateOrderStatus provides a mock function with given fields: ctx, id, status
+func (_m *OrderRepo) UpdateOrderStatus(ctx context.Context, id int, status string) (*models.Order, error) {
+	ret := _m.Called(ctx, id, status)
+
+	var r0 *models.Order
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, string) (*models.Order, error)); ok {
+		return rf(ctx, id, status)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int, string) *models.Order); ok {
+		r0 = rf(ctx, id, status)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Order)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int, string) error); ok {
+		r1 = rf(ctx, id, status)
 	} else {
 		r1 = ret.Error(1)
 	}

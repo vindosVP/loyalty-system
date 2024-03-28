@@ -9,6 +9,7 @@ import (
 	"github.com/vindosVP/loyalty-system/internal/database"
 	"github.com/vindosVP/loyalty-system/internal/handlers"
 	"github.com/vindosVP/loyalty-system/internal/middleware"
+	"github.com/vindosVP/loyalty-system/internal/processor"
 	"github.com/vindosVP/loyalty-system/internal/repos"
 	"github.com/vindosVP/loyalty-system/internal/storage"
 	"github.com/vindosVP/loyalty-system/pkg/logger"
@@ -45,6 +46,8 @@ func Run(cfg *config.Config) error {
 		r.Get("/api/user/withdrawals", handlers.GetUsersWithdrawals(s))
 	})
 
+	p := processor.New(cfg.RequestInterval, cfg.AccrualSysAddr, s)
+	go p.Run()
 	logger.Log.Info("Server started", zap.String("Address", cfg.RunAddr))
 	err = http.ListenAndServe(cfg.RunAddr, r)
 	if err != nil {
