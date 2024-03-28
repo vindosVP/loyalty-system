@@ -22,7 +22,7 @@ func New() *Config {
 	var reqInterval int
 	flag.StringVar(&flagCfg.RunAddr, "a", ":8081", "run address")
 	flag.StringVar(&flagCfg.LogLevel, "l", "debug", "log level")
-	flag.StringVar(&flagCfg.AccrualSysAddr, "r", "localhost:8080", "accrual system address")
+	flag.StringVar(&flagCfg.AccrualSysAddr, "r", "http://localhost:8080", "accrual system address")
 	flag.StringVar(&flagCfg.DBURI, "d", "postgres://postgres:postgres@localhost:5432/loyalty-system?sslmode=disable", "database uri")
 	flag.StringVar(&flagCfg.JWTSecret, "s", "super-secret", "jwt secret")
 	flag.IntVar(&reqInterval, "w", 5, "accrual request interval")

@@ -2,7 +2,6 @@ package processor
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-resty/resty/v2"
@@ -125,6 +124,7 @@ func (p *Processor) generateJobs(orders []int) chan job {
 				serverAddress: p.ServerAddress,
 				client:        p.Client,
 				order:         order,
+				storage:       p.Storage,
 			}
 			id++
 		}
@@ -136,7 +136,7 @@ func (p *Processor) generateJobs(orders []int) chan job {
 func processOrder(client *resty.Client, serverAddress string, order int, storage Storage) error {
 	var response accrualResponse
 	url := fmt.Sprintf("%s/api/orders/%s", serverAddress, strconv.Itoa(order))
-	resp, err := client.R().Get(url)
+	resp, err := client.R().SetResult(&response).Get(url)
 	if err != nil {
 		logger.Log.Error("Failed to get accruals by order", zap.Int("orderId", order), zap.Error(err))
 	}
@@ -145,11 +145,6 @@ func processOrder(client *resty.Client, serverAddress string, order int, storage
 			logger.Log.Error("Failed to get accruals by order", zap.Int("orderId", order), zap.Error(ErrTooManyRequests))
 		}
 		logger.Log.Error("Failed to get accruals by order", zap.Int("orderId", order), zap.Int("statusCode", resp.StatusCode()))
-		return err
-	}
-	err = json.Unmarshal(resp.Body(), &response)
-	if err != nil {
-		logger.Log.Error("Failed to unmarshal accruals response", zap.Int("orderId", order), zap.Error(err))
 		return err
 	}
 	id, _ := strconv.Atoi(response.Order)
