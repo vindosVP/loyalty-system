@@ -242,6 +242,32 @@ func (_m *OrderRepo) UpdateOrder(ctx context.Context, id int, status string, sum
 	return r0, r1
 }
 
+// UpdateOrderStatus provides a mock function with given fields: ctx, id, status
+func (_m *OrderRepo) UpdateOrderStatus(ctx context.Context, id int, status string) (*models.Order, error) {
+	ret := _m.Called(ctx, id, status)
+
+	var r0 *models.Order
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, string) (*models.Order, error)); ok {
+		return rf(ctx, id, status)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, int, string) *models.Order); ok {
+		r0 = rf(ctx, id, status)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Order)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, int, string) error); ok {
+		r1 = rf(ctx, id, status)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewOrderRepo interface {
 	mock.TestingT
 	Cleanup(func())
